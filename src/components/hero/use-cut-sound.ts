@@ -3,13 +3,13 @@ import { useCallback, useEffect, useRef } from "react";
 // Only these events count as a user activation that lets an AudioContext start in Chrome and Safari.
 const UNLOCK_EVENTS = ["pointerdown", "pointerup", "touchend", "keydown"] as const;
 
-const TOCK_START_HZ = 340;
-const TOCK_END_HZ = 290;
-const TOCK_PITCH_DROP_S = 0.025;
+const TOCK_START_HZ = 480;
+const TOCK_END_HZ = 400;
+const TOCK_PITCH_DROP_S = 0.02;
 const TOCK_ATTACK_S = 0.004;
-const TOCK_DURATION_S = 0.05;
-const TOCK_PEAK_GAIN = 0.035;
-const TOCK_LOWPASS_HZ = 900;
+const TOCK_DURATION_S = 0.045;
+const TOCK_PEAK_GAIN = 0.06;
+const TOCK_LOWPASS_HZ = 1600;
 const TOCK_LOWPASS_Q = 0.707;
 const SILENT_GAIN = 0.0001;
 
