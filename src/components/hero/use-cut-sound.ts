@@ -3,28 +3,35 @@ import { useCallback, useEffect, useRef } from "react";
 // Only these events count as a user activation that lets an AudioContext start in Chrome and Safari.
 const UNLOCK_EVENTS = ["pointerdown", "pointerup", "touchend", "keydown"] as const;
 
-const TOCK_START_HZ = 520;
-const TOCK_END_HZ = 260;
-const TOCK_PITCH_DROP_S = 0.08;
-const TOCK_ATTACK_S = 0.005;
-const TOCK_DURATION_S = 0.16;
-const TOCK_PEAK_GAIN = 0.08;
+const TOCK_START_HZ = 340;
+const TOCK_END_HZ = 290;
+const TOCK_PITCH_DROP_S = 0.025;
+const TOCK_ATTACK_S = 0.004;
+const TOCK_DURATION_S = 0.05;
+const TOCK_PEAK_GAIN = 0.035;
+const TOCK_LOWPASS_HZ = 900;
+const TOCK_LOWPASS_Q = 0.707;
 const SILENT_GAIN = 0.0001;
 
 function playTock(context: AudioContext): void {
   const now = context.currentTime;
   const oscillator = context.createOscillator();
+  const lowpass = context.createBiquadFilter();
   const envelope = context.createGain();
 
   oscillator.type = "sine";
   oscillator.frequency.setValueAtTime(TOCK_START_HZ, now);
   oscillator.frequency.exponentialRampToValueAtTime(TOCK_END_HZ, now + TOCK_PITCH_DROP_S);
 
+  lowpass.type = "lowpass";
+  lowpass.frequency.setValueAtTime(TOCK_LOWPASS_HZ, now);
+  lowpass.Q.setValueAtTime(TOCK_LOWPASS_Q, now);
+
   envelope.gain.setValueAtTime(SILENT_GAIN, now);
   envelope.gain.exponentialRampToValueAtTime(TOCK_PEAK_GAIN, now + TOCK_ATTACK_S);
   envelope.gain.exponentialRampToValueAtTime(SILENT_GAIN, now + TOCK_DURATION_S);
 
-  oscillator.connect(envelope).connect(context.destination);
+  oscillator.connect(lowpass).connect(envelope).connect(context.destination);
   oscillator.start(now);
   oscillator.stop(now + TOCK_DURATION_S);
 }
